@@ -1,6 +1,7 @@
 import scrapy
 from scrapy.http import FormRequest
-from scrapy.utils.response import open_in_browser
+#from scrapy.utils.response import open_in_browser #Usado apenas para testar o login.
+from ..items import MyratestItem
 
 class QuotesSpider(scrapy.Spider):
     name = "quotes"
@@ -18,11 +19,22 @@ class QuotesSpider(scrapy.Spider):
             'csrf_token' : token,
             'username' : 'teste@myra.com',
             'password' : 'testemyra'
-        }, callback=self.start_scraping)
-    def start_scraping(self, response):
-        open_in_browser(response)
-        page = response.url.split("/")[-2]
-        filename = f'quotes-{page}.html'
-        with open(filename, 'wb') as f:
-            f.write(response.body)
-        self.log(f'Saved file {filename}')
+        }, callback=self.scrap_content)
+
+    def scrap_content(self, response):
+        #open_in_browser(response) Apenas para testar se o login funcionou.
+        
+        items = MyratestItem()
+        
+        quotes_div = response.css('div.quote')
+        
+        for quote in quotes_div:
+            text = quote.css('span.text::text').extract()
+            author = quote.css('.author::text').extract()
+            tag = quote.css('.tag::text').extract()
+            
+            items['text'] = text
+            items['author'] = author
+            items['tag'] = tag
+            
+            yield items
