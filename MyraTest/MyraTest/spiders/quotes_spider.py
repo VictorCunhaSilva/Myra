@@ -23,7 +23,7 @@ class QuotesSpider(scrapy.Spider):
 
     def scrap_content(self, response):
         #open_in_browser(response) Apenas para testar se o login funcionou.
-        
+
         items = MyratestItem()
         
         quotes_div = response.css('div.quote')
@@ -36,5 +36,9 @@ class QuotesSpider(scrapy.Spider):
             items['text'] = text
             items['author'] = author
             items['tag'] = tag
-            
+
             yield items
+        
+        page = response.css('li.next a::attr(href)').get()
+        if page:
+            yield response.follow(page, callback= self.scrap_content)
