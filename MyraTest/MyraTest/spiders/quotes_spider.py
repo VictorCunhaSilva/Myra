@@ -50,7 +50,6 @@ class QuotesSpider(CrawlSpider):
                 yield items
             
             if ( words in quote.css('span.text::text').get() ):
-                print('dentro')
                 text = quote.css('span.text::text').extract()
                 author = quote.css('.author::text').extract()
                 tag = quote.css('.tag::text').extract()
