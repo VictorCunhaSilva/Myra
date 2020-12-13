@@ -10,3 +10,5 @@ class MyratestItem(scrapy.Item):
     text = scrapy.Field()
     author = scrapy.Field()
     tag = scrapy.Field()
+    page = scrapy.Field()
+    rule = scrapy.Field()

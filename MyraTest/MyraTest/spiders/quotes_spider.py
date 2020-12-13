@@ -2,8 +2,10 @@ import scrapy
 from scrapy.http import FormRequest
 #from scrapy.utils.response import open_in_browser #Usado apenas para testar o login.
 from ..items import MyratestItem
+from scrapy.spiders import CrawlSpider
 
-class QuotesSpider(scrapy.Spider):
+
+class QuotesSpider(CrawlSpider):
     name = "quotes"
 
     def start_requests(self):
@@ -28,17 +30,38 @@ class QuotesSpider(scrapy.Spider):
         
         quotes_div = response.css('div.quote')
         
-        for quote in quotes_div:
-            text = quote.css('span.text::text').extract()
-            author = quote.css('.author::text').extract()
-            tag = quote.css('.tag::text').extract()
-            
-            items['text'] = text
-            items['author'] = author
-            items['tag'] = tag
-
-            yield items
+        page = response.url.split("/")[-2]
         
-        page = response.css('li.next a::attr(href)').get()
-        if page:
-            yield response.follow(page, callback= self.scrap_content)
+        tags = 'life'
+        authors = 'Mark Twain'
+        words = 'truth'
+        
+        for quote in quotes_div:
+            if ( quote.css('.author::text').get() in authors ) and ( tags in quote.css('.tag::text').extract() ):
+                text = quote.css('span.text::text').extract()
+                author = quote.css('.author::text').extract()
+                tag = quote.css('.tag::text').extract()
+                
+                items['text'] = text
+                items['author'] = author
+                items['tag'] = tag
+                items['page'] = page
+                items['rule'] = 1
+                yield items
+            
+            if ( words in quote.css('span.text::text').get() ):
+                print('dentro')
+                text = quote.css('span.text::text').extract()
+                author = quote.css('.author::text').extract()
+                tag = quote.css('.tag::text').extract()
+                
+                items['text'] = text
+                items['author'] = author
+                items['tag'] = tag
+                items['page'] = page
+                items['rule'] = 2
+                yield items
+            
+        next_page = response.css('li.next a::attr(href)').get()
+        if next_page:
+            yield response.follow(next_page, callback= self.scrap_content)
