@@ -35,3 +35,8 @@ O desafio consiste em criar uma spider com o framework Scrapy (https://docs.scra
    assert_has_calls, etc). Deverão ser criados mocks para que não sejam
    chamadas funções externas à função que está sendo testada. Utilize o
    pytest-cov para verificar a porcentagem de cobertura.
+
+**Funcionamento:**
+
+ - Para executar o projeto, basta acessar o caminho "Myra/MyraTest" e executar o comando: "scrapy crawl quotes".
+   Em seguida o programa irá ler a pagina web e criar os arquivos desejados. Alguns arquivos de execução foram disponibilizados na pasta "Extractions"
